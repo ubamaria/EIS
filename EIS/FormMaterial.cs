@@ -48,6 +48,35 @@ namespace EIS
         }
         private void bindingNavigatorAddNewItem_Click(object sender, EventArgs e)
         {
+            if (toolStripTextBox1.Text == "")
+            {
+                MessageBox.Show("Введите название материала");
+                return;
+            }
+            if (toolStripTextBox2.Text.IndexOf('.') > 0)
+            {
+                if (toolStripTextBox2.Text.Substring(toolStripTextBox2.Text.IndexOf('.')).Length > 3)
+                {
+                    MessageBox.Show("Стоимость должна быть не более 10 символов и иметь не более 2-ух знаков после запятой");
+                    return;
+                }
+            }
+            if (toolStripTextBox3.Text.IndexOf('.') > 0)
+            {
+                if (toolStripTextBox3.Text.Substring(toolStripTextBox3.Text.IndexOf('.')).Length > 3)
+                {
+                    MessageBox.Show("Процент должен быть не более 3 символов и иметь не более 2-ух знаков после запятой");
+                    return;
+                }
+            }
+            string percent = toolStripTextBox3.Text.Replace(".", ",");
+            int percent1 = Convert.ToInt32(Convert.ToDouble(percent));
+            if (percent1 >= 100)
+            {
+                MessageBox.Show("Процент должен быть меньше 100");
+                return;
+            }
+            toolStripTextBox2.Text = toolStripTextBox2.Text.Replace(",", ".");
             //Для правильной записи нового кода необходимо запросить
             //максимальное значение idMaterial из таблицы Material
             string ConnectionString = @"Data Source=" + sPath +
@@ -63,9 +92,9 @@ namespace EIS
             //обновление dataGridView1
             selectCommand = "select * from Material";
             refreshForm(ConnectionString, selectCommand);
-            toolStripTextBox1.Text = "";
-            toolStripTextBox2.Text = "";
-            toolStripTextBox3.Text = "";
+            //toolStripTextBox1.Text = "";
+            //toolStripTextBox2.Text = "";
+            //toolStripTextBox3.Text = "";
 
         }
 
@@ -122,6 +151,35 @@ namespace EIS
 
         private void toolStripButtonChange_Click(object sender, EventArgs e)
         {
+            if (toolStripTextBox1.Text == "")
+            {
+                MessageBox.Show("Введите название материала");
+                return;
+            }
+            if (toolStripTextBox2.Text.IndexOf('.') > 0)
+            {
+                if (toolStripTextBox2.Text.Substring(toolStripTextBox2.Text.IndexOf('.')).Length > 3)
+                {
+                    MessageBox.Show("Стоимость должна быть не более 10 символов и иметь не более 2-ух знаков после запятой");
+                    return;
+                }
+            }
+            if (toolStripTextBox3.Text.IndexOf('.') > 0)
+            {
+                if (toolStripTextBox3.Text.Substring(toolStripTextBox3.Text.IndexOf('.')).Length > 3)
+                {
+                    MessageBox.Show("Процент должен быть не более 3 символов и иметь не более 2-ух знаков после запятой");
+                    return;
+                }
+            }
+            string percent = toolStripTextBox3.Text.Replace(".", ",");
+            int percent1 = Convert.ToInt32(Convert.ToDouble(percent));
+            if (percent1 >= 100)
+            {
+                MessageBox.Show("Процент должен быть меньше 100");
+                return;
+            }
+            toolStripTextBox2.Text = toolStripTextBox2.Text.Replace(",", ".");
             //выбрана строка CurrentRow
             int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
             //получить значение Name выбранной строки
@@ -134,16 +192,16 @@ namespace EIS
             changeValue(ConnectionString, selectCommand);
             string changeCost = toolStripTextBox2.Text;
             String selectCost = "update Material set CostMaterial='" + changeCost + "'where IdMaterial = " + valueId;
-            changeValue(ConnectionString, selectCommand);
+            changeValue(ConnectionString, selectCost);
             string changeNDS = toolStripTextBox3.Text;
             String selectNDS = "update Material set NDS='" + changeNDS + "'where IdMaterial = " + valueId;
-            changeValue(ConnectionString, selectCommand);
+            changeValue(ConnectionString, selectNDS);
             //обновление dataGridView1
             selectCommand = "select * from Material";
             refreshForm(ConnectionString, selectCommand);
-            toolStripTextBox1.Text = "";
-            toolStripTextBox2.Text = "";
-            toolStripTextBox3.Text = "";
+            //toolStripTextBox1.Text = "";
+            //toolStripTextBox2.Text = "";
+            //toolStripTextBox3.Text = "";
         }
         private void dataGridView1_CellMouseClick(object sender,
 DataGridViewCellMouseEventArgs e)
@@ -153,6 +211,10 @@ DataGridViewCellMouseEventArgs e)
             //получить значение Name выбранной строки
             string nameId = dataGridView1[1, CurrentRow].Value.ToString();
             toolStripTextBox1.Text = nameId;
+            string costId = dataGridView1[2, CurrentRow].Value.ToString();
+            toolStripTextBox2.Text = costId;
+            string ndsId = dataGridView1[3, CurrentRow].Value.ToString();
+            toolStripTextBox3.Text = ndsId;
         }
 
         private void bindingNavigatorDeleteItem_Click(object sender, EventArgs e)
@@ -170,6 +232,36 @@ DataGridViewCellMouseEventArgs e)
                 selectCommand = "select * from Material";
                 refreshForm(ConnectionString, selectCommand);
                 toolStripTextBox1.Text = "";
+            }
+        }
+        private void toolStripTextBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char l = e.KeyChar;
+            if ((l < '0' || l > '9') && l != '\b')
+            {
+                if (toolStripTextBox2.SelectionStart == 0)
+                {
+                    if (l == '.') e.Handled = true;
+                }
+                if (l != '.' || toolStripTextBox2.Text.IndexOf(".") != -1)
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+        private void toolStripTextBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char l = e.KeyChar;
+            if ((l < '0' || l > '9') && l != '\b')
+            {
+                if (toolStripTextBox3.SelectionStart == 0)
+                {
+                    if (l == '.') e.Handled = true;
+                }
+                if (l != '.' || toolStripTextBox3.Text.IndexOf(".") != -1)
+                {
+                    e.Handled = true;
+                }
             }
         }
     }

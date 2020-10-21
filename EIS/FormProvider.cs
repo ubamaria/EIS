@@ -100,15 +100,32 @@ DataGridViewCellMouseEventArgs e)
             //получить значение Name выбранной строки
             string nameId = dataGridView1[1, CurrentRow].Value.ToString();
             toolStripTextBox1.Text = nameId;
+            string accId = dataGridView1[2, CurrentRow].Value.ToString();
+            toolStripTextBox2.Text = accId;
         }
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
         {
+            if (toolStripTextBox1.Text == "")
+            {
+                MessageBox.Show("Введите название организации");
+                return;
+            }
             string ConnectionString = @"Data Source=" + sPath +
            ";New=False;Version=3";
             String selectCommand = "select MAX(IdProvider) from Provider";
             object maxValue = selectValue(ConnectionString, selectCommand);
             if (Convert.ToString(maxValue) == "")
                 maxValue = 0;
+            if (!(toolStripTextBox1.Text.Length < 50))
+            {
+                MessageBox.Show("Наименование организации должно содержать не более 50 символов");
+                return;
+            }
+            if (!(toolStripTextBox2.Text.Length == 15))
+            {
+                MessageBox.Show("Банковский счет должен содержать 15 символов");
+                return;
+            }
             //вставка в таблицу
             string txtSQLQuery = "insert into Provider (IdProvider, Organization, BankAccount) values (" +
             (Convert.ToInt32(maxValue) + 1) + ", '" + toolStripTextBox1.Text + "', '" + toolStripTextBox2.Text + "')";
@@ -117,11 +134,26 @@ DataGridViewCellMouseEventArgs e)
             selectCommand = "select * from Provider";
             refreshForm(ConnectionString, selectCommand);
             toolStripTextBox1.Text = "";
-            toolStripTextBox2.Text = "";
+            //toolStripTextBox2.Text = "";
         }
 
         private void toolStripButtonChange_Click(object sender, EventArgs e)
         {
+            if (toolStripTextBox1.Text == "")
+            {
+                MessageBox.Show("Введите название организации");
+                return;
+            }
+            if (!(toolStripTextBox1.Text.Length < 50))
+            {
+                MessageBox.Show("Наименование организации должно содержать не более 50 символов");
+                return;
+            }
+            if (!(toolStripTextBox2.Text.Length == 15))
+            {
+                MessageBox.Show("Банковский счет должен содержать 15 символов");
+                return;
+            }
             //выбрана строка CurrentRow
             int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
             //получить значение Name выбранной строки
@@ -134,7 +166,7 @@ DataGridViewCellMouseEventArgs e)
             changeValue(ConnectionString, selectCommand);
             string changeBankAcc = toolStripTextBox2.Text;
             String selectBankAcc = "update Provider set BankAccount='" + changeBankAcc + "'where IdProvider = " + valueId;
-            changeValue(ConnectionString, selectCommand);
+            changeValue(ConnectionString, selectBankAcc);
             //обновление dataGridView1
             selectCommand = "select * from Provider";
             refreshForm(ConnectionString, selectCommand);
@@ -156,6 +188,15 @@ DataGridViewCellMouseEventArgs e)
             selectCommand = "select * from Provider";
             refreshForm(ConnectionString, selectCommand);
             toolStripTextBox1.Text = "";
+        }
+        private void toolStripTextBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+ char number = e.KeyChar;
+
+            if (!Char.IsDigit(number))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

@@ -20,6 +20,8 @@ namespace EIS
         private DataSet DS = new DataSet();
         private DataTable DT = new DataTable();
         private string sPath = Path.Combine(Application.StartupPath, "F:\\sql\\MyDb.db");
+        private int minLenght = 2;
+        private int maxLenght = 50;
 
         public FormBuyer()
         {
@@ -104,6 +106,10 @@ DataGridViewCellMouseEventArgs e)
             //получить значение Name выбранной строки
             string nameId = dataGridView1[1, CurrentRow].Value.ToString();
             toolStripTextBox1.Text = nameId;
+            string mailId = dataGridView1[2, CurrentRow].Value.ToString();
+            toolStripTextBox2.Text = mailId;
+            string ndsId = dataGridView1[3, CurrentRow].Value.ToString();
+            toolStripTextBox3.Text = ndsId;
         }
 
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
@@ -114,28 +120,56 @@ DataGridViewCellMouseEventArgs e)
             object maxValue = selectValue(ConnectionString, selectCommand);
             if (Convert.ToString(maxValue) == "")
                 maxValue = 0;
-            //вставка в таблицу
-            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            if (Regex.IsMatch(toolStripTextBox2.Text, pattern, RegexOptions.IgnoreCase))
+            if (!(toolStripTextBox1.Text.Length > minLenght && toolStripTextBox1.Text.Length < maxLenght))
             {
-                string txtSQLQuery = "insert into Buyer (IdBuyer, FIO, Mail, Phone) values (" +
-            (Convert.ToInt32(maxValue) + 1) + ", '" + toolStripTextBox1.Text + "', '" + toolStripTextBox2.Text + "', '" + toolStripTextBox3.Text + "')";
-                ExecuteQuery(txtSQLQuery);
-                //обновление dataGridView1
-                selectCommand = "select * from Buyer";
-                refreshForm(ConnectionString, selectCommand);
-                toolStripTextBox1.Text = "";
-                toolStripTextBox2.Text = "";
-                toolStripTextBox3.Text = "";
+                MessageBox.Show("ФИО должно содержать не менее 3 и не более 50 символов");
+                return;
             }
-            else
+
+            //вставка в таблицу
+            string patternmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            string patternphone = @"^^[(8|\+7]\d+$";
+            if (!(Regex.IsMatch(toolStripTextBox2.Text, patternmail, RegexOptions.IgnoreCase)))
             {
                 MessageBox.Show("Почта введена не корректно");
+                return;
             }
+            if (!(Regex.IsMatch(toolStripTextBox3.Text, patternphone, RegexOptions.IgnoreCase)))
+            {
+                MessageBox.Show("Номер введен не корректно");
+                return;
+            }
+            string txtSQLQuery = "insert into Buyer (IdBuyer, FIO, Mail, Phone) values (" +
+        (Convert.ToInt32(maxValue) + 1) + ", '" + toolStripTextBox1.Text + "', '" + toolStripTextBox2.Text + "', '" + toolStripTextBox3.Text + "')";
+            ExecuteQuery(txtSQLQuery);
+            //обновление dataGridView1
+            selectCommand = "select * from Buyer";
+            refreshForm(ConnectionString, selectCommand);
+            toolStripTextBox1.Text = "";
+            toolStripTextBox2.Text = "";
+            toolStripTextBox3.Text = "";
+           
         }
 
             private void toolStripButtonChange_Click(object sender, EventArgs e)
         {
+            if (!(toolStripTextBox1.Text.Length > minLenght && toolStripTextBox1.Text.Length < maxLenght))
+            {
+                MessageBox.Show("ФИО должно содержать не менее 3 и не более 50 символов");
+                return;
+            }
+            string patternmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            string patternphone = @"^^[(8|\+7]\d+$";
+            if (!(Regex.IsMatch(toolStripTextBox2.Text, patternmail, RegexOptions.IgnoreCase)))
+            {
+                MessageBox.Show("Почта введена не корректно");
+                return;
+            }
+            if (!(Regex.IsMatch(toolStripTextBox3.Text, patternphone, RegexOptions.IgnoreCase)))
+            {
+                MessageBox.Show("Номер введен не корректно");
+                return;
+            }
             //выбрана строка CurrentRow
             int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
             //получить значение Name выбранной строки
@@ -148,10 +182,10 @@ DataGridViewCellMouseEventArgs e)
             changeValue(ConnectionString, selectCommand);
             string changeMail = toolStripTextBox2.Text;
             String selectMail = "update Buyer set Mail='" + changeMail + "'where IdBuyer = " + valueId;
-            changeValue(ConnectionString, selectCommand);
+            changeValue(ConnectionString, selectMail);
             string changePhone = toolStripTextBox3.Text;
             String selectPhone = "update Buyer set Phone='" + changePhone + "'where IdBuyer = " + valueId;
-            changeValue(ConnectionString, selectCommand);
+            changeValue(ConnectionString, selectPhone);
             //обновление dataGridView1
             selectCommand = "select * from Buyer";
             refreshForm(ConnectionString, selectCommand);
@@ -174,6 +208,21 @@ DataGridViewCellMouseEventArgs e)
             selectCommand = "select * from Buyer";
             refreshForm(ConnectionString, selectCommand);
             toolStripTextBox1.Text = "";
+        }
+        private void toolStripTextBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char l = e.KeyChar;
+            if ((l < '0' || l > '9') && l != '\b')
+            {
+                if (toolStripTextBox3.SelectionStart == 0)
+                {
+                    if (l == '.') e.Handled = true;
+                }
+                if (l != '.' || toolStripTextBox3.Text.IndexOf(".") != -1)
+                {
+                    e.Handled = true;
+                }
+            }
         }
     }
 }
