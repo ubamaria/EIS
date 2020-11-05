@@ -77,6 +77,12 @@
     <Compile Include="FormChartOfAccounts.Designer.cs">
       <DependentUpon>FormChartOfAccounts.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormJournalOperation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormJournalOperation.Designer.cs">
+      <DependentUpon>FormJournalOperation.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormMaterial.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +101,12 @@
     <Compile Include="FormRequest.Designer.cs">
       <DependentUpon>FormRequest.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormRequestMaterial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRequestMaterial.Designer.cs">
+      <DependentUpon>FormRequestMaterial.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormWholeSale.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +121,9 @@
     <EmbeddedResource Include="FormChartOfAccounts.resx">
       <DependentUpon>FormChartOfAccounts.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormJournalOperation.resx">
+      <DependentUpon>FormJournalOperation.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormMaterial.resx">
       <DependentUpon>FormMaterial.cs</DependentUpon>
     </EmbeddedResource>
@@ -117,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormRequest.resx">
       <DependentUpon>FormRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRequestMaterial.resx">
+      <DependentUpon>FormRequestMaterial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormWholeSale.resx">
       <DependentUpon>FormWholeSale.cs</DependentUpon>

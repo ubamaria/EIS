@@ -28,12 +28,13 @@ namespace EIS
         {
             string ConnectionString = @"Data Source=" + sPath +
 ";New=False;Version=3";
-            String selectCommand = "Select * FROM Request";
+            String selectCommand = "Select Request.IdRequest,Material.Name, Buyer.FIO, Request.Count, Request.RequestDate FROM Request Join Material On Material.IdMaterial=Request.IdMaterial Join Buyer On Buyer.IdBuyer=Request.IdBuyer";
             selectTable(ConnectionString, selectCommand);
             String selectMaterial = "Select IdMaterial, Name from Material";
             selectCombo(ConnectionString, selectMaterial, toolStripComboBox1, "Name","IdMaterial");
             String selectBuyer = "Select IdBuyer, FIO from Buyer";
-            selectCombo(ConnectionString, selectBuyer, toolStripComboBox2, "FIO","IdBuyer");
+            selectCombo(ConnectionString, selectBuyer, toolStripComboBox2, "FIO", "IdBuyer");
+            toolStripComboBox1.SelectedIndex = -1;
             toolStripComboBox2.SelectedIndex = -1;
         }
         public void selectTable(string ConnectionString, String selectCommand)
@@ -111,34 +112,38 @@ namespace EIS
 
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
         {
-            if (toolStripComboBox1.Text == "")
-            {
-                MessageBox.Show("Выберите материал");
-                return;
-            }
-            if (toolStripTextBox1.Text == "")
-            {
-                MessageBox.Show("Введите количество материалов");
-                return;
-            }
-            if (toolStripComboBox2.Text == "")
-            {
-                MessageBox.Show("Выберите покупателя");
-                return;
-            }
-            string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-            String selectCommand = "select MAX(IdRequest) from Request";
-            object maxValue = selectValue(ConnectionString, selectCommand);
-            if (Convert.ToString(maxValue) == "")
-                maxValue = 0;
-            string txtSQLQuery = "insert into Request (IdRequest, IdMaterial, IdBuyer, Count, RequestDate) values (" +
-          (Convert.ToInt32(maxValue) + 1) + ", '" + toolStripComboBox1.Text + "', '" + toolStripComboBox2.Text + "', '" + toolStripTextBox1.Text + "', '" + DateTime.Now.ToString() + "')";
-            ExecuteQuery(txtSQLQuery);
-            selectCommand = "Select * FROM Request";
-            refreshForm(ConnectionString, selectCommand);
-            toolStripComboBox2.Text = "";
-            toolStripComboBox1.Text = "";
-            toolStripTextBox1.Text = "";
+            var form = new FormRequestMaterial();
+            form.Show();////////////////////////////////
+
+
+          //  if (toolStripComboBox1.Text == "")
+          //  {
+          //      MessageBox.Show("Выберите материал");
+          //      return;
+          //  }
+          //  if (toolStripTextBox1.Text == "")
+          //  {
+          //      MessageBox.Show("Введите количество материалов");
+          //      return;
+          //  }
+          //  if (toolStripComboBox2.Text == "")
+          //  {
+          //      MessageBox.Show("Выберите покупателя");
+          //      return;
+          //  }
+          //  string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
+          //  String selectCommand = "select MAX(IdRequest) from Request";
+          //  object maxValue = selectValue(ConnectionString, selectCommand);
+          //  if (Convert.ToString(maxValue) == "")
+          //      maxValue = 0;
+          //  string txtSQLQuery = "insert into Request (IdRequest,IdMaterial, IdBuyer, Count, RequestDate) values (" +
+          //(Convert.ToInt32(maxValue) + 1) + ", '" + toolStripComboBox1.ComboBox.SelectedValue + "', '" + toolStripComboBox2.ComboBox.SelectedValue + "', '" + toolStripTextBox1.Text + "', '" + DateTime.Now.ToString() + "')";
+          //  ExecuteQuery(txtSQLQuery);
+          //  selectCommand = "Select Request.IdRequest,Material.Name, Buyer.FIO, Request.Count, Request.RequestDate FROM Request Join Material On Material.IdMaterial=Request.IdMaterial Join Buyer On Buyer.IdBuyer=Request.IdBuyer";
+          //  refreshForm(ConnectionString, selectCommand);
+          //  toolStripComboBox1.SelectedIndex = -1;
+          //  toolStripComboBox2.SelectedIndex = -1;
+          //  toolStripTextBox1.Text = "";
         }
         private void dataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -149,12 +154,37 @@ namespace EIS
                 toolStripComboBox1.Text = idmaterial;
                 string idfio = dataGridView1[2, CurrentRow].Value.ToString();
                 toolStripComboBox2.Text = idfio;
+                string count = dataGridView1[3, CurrentRow].Value.ToString();
+                toolStripTextBox1.Text = count;
+            }
+        }
+
+private void toolStripButtonDelete_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
+                string valueId = dataGridView1[0, CurrentRow].Value.ToString();
+                String selectCommand = "delete from Request where IdRequest =" + valueId;
+                string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
+                changeValue(ConnectionString, selectCommand);
+                selectCommand = "Select Request.IdRequest,Material.Name, Buyer.FIO, Request.Count, Request.RequestDate FROM Request Join Material On Material.IdMaterial=Request.IdMaterial Join Buyer On Buyer.IdBuyer=Request.IdBuyer";
+                refreshForm(ConnectionString, selectCommand);
+                toolStripComboBox1.Text = "";
+                toolStripComboBox2.Text = "";
+                toolStripTextBox1.Text = "";
             }
         }
 
         private void toolStripButtonChange_Click(object sender, EventArgs e)
         {
-            if (toolStripComboBox1.Text == "")
+            if (dataGridView1.SelectedRows.Count == 1)
+            {
+                var form = new FormRequestMaterial();
+                form.Id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
+            }////////////////////////////////////
+
+             if (toolStripComboBox1.Text == "")
             {
                 MessageBox.Show("Выберите материал");
                 return;
@@ -174,33 +204,19 @@ namespace EIS
                 int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
                 string valueId = dataGridView1[0, CurrentRow].Value.ToString();
                 string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-                string changeMaterial = toolStripComboBox1.Text;
+                string changeMaterial = toolStripComboBox1.ComboBox.SelectedValue.ToString();
                 String selectCommand = "update Request set IdMaterial='" + changeMaterial + "' where IdRequest = " + valueId;
                 changeValue(ConnectionString, selectCommand);
-                string changeFIO = toolStripComboBox2.Text;
+                string changeFIO = toolStripComboBox2.ComboBox.SelectedValue.ToString();
                 selectCommand = "update Request set IdBuyer='" + changeFIO + "' where IdRequest = " + valueId;
                 changeValue(ConnectionString, selectCommand);
-                selectCommand = "Select * FROM Request";
-                refreshForm(ConnectionString, selectCommand);
-                toolStripComboBox1.Text = "";
-                toolStripComboBox2.Text = "";
-                toolStripTextBox1.Text = "";
-            }
-        }
-
-        private void toolStripButtonDelete_Click(object sender, EventArgs e)
-        {
-            if (dataGridView1.SelectedRows.Count > 0)
-            {
-                int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
-                string valueId = dataGridView1[0, CurrentRow].Value.ToString();
-                String selectCommand = "delete from Request where IdRequest =" + valueId;
-                string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
+                string changeCount = toolStripTextBox1.Text;
+                selectCommand = "update Request set Count='" + changeCount + "' where IdRequest = " + valueId;
                 changeValue(ConnectionString, selectCommand);
-                selectCommand = "Select * FROM Request";
+                selectCommand = "Select Request.IdRequest,Material.Name, Buyer.FIO, Request.Count, Request.RequestDate FROM Request Join Material On Material.IdMaterial=Request.IdMaterial Join Buyer On Buyer.IdBuyer=Request.IdBuyer";
                 refreshForm(ConnectionString, selectCommand);
-                toolStripComboBox1.Text = "";
-                toolStripComboBox2.Text = "";
+                toolStripComboBox1.SelectedIndex = -1;
+                toolStripComboBox2.SelectedIndex = -1;
                 toolStripTextBox1.Text = "";
             }
         }

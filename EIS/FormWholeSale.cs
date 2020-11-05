@@ -46,5 +46,11 @@ namespace EIS
             FormRequest newForm = new FormRequest();
             newForm.Show();
         }
+
+        private void журналОперацийToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormJournalOperation newForm = new FormJournalOperation();
+            newForm.Show();
+        }
     }
 }
