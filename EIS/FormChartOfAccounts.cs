@@ -18,7 +18,7 @@ namespace EIS
         private SQLiteCommand sql_cmd;
         private DataSet DS = new DataSet();
         private DataTable DT = new DataTable();
-        private string sPath = Path.Combine(Application.StartupPath, "F:\\sql\\MyDb.db");
+        private string sPath = Path.Combine(Application.StartupPath, Program.sPath);
         public FormChartOfAccounts()
         {
             InitializeComponent();

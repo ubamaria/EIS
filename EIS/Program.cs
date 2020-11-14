@@ -11,6 +11,9 @@ namespace EIS
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
+
+        public static string sPath = "E:/SQLiteStudio/dbUba.db";
+
         [STAThread]
         static void Main()
         {

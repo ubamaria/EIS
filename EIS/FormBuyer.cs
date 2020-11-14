@@ -19,7 +19,7 @@ namespace EIS
         private SQLiteCommand sql_cmd;
         private DataSet DS = new DataSet();
         private DataTable DT = new DataTable();
-        private string sPath = Path.Combine(Application.StartupPath, "F:\\sql\\MyDb.db");
+        private string sPath = Path.Combine(Application.StartupPath, Program.sPath);
         private int minLenght = 2;
         private int maxLenght = 50;
 

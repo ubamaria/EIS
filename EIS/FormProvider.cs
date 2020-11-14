@@ -18,7 +18,7 @@ namespace EIS
         private SQLiteCommand sql_cmd;
         private DataSet DS = new DataSet();
         private DataTable DT = new DataTable();
-        private string sPath = Path.Combine(Application.StartupPath, "F:\\sql\\MyDb.db");
+        private string sPath = Path.Combine(Application.StartupPath, Program.sPath);
         public FormProvider()
         {
             InitializeComponent();
@@ -92,8 +92,7 @@ namespace EIS
             trans.Commit();
             connect.Close();
         }
-        private void dataGridView1_CellMouseClick(object sender,
-DataGridViewCellMouseEventArgs e)
+        private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             //выбрана строка CurrentRow
             int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
@@ -191,7 +190,7 @@ DataGridViewCellMouseEventArgs e)
         }
         private void toolStripTextBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
- char number = e.KeyChar;
+            char number = e.KeyChar;
 
             if (!Char.IsDigit(number))
             {
