@@ -130,7 +130,6 @@ namespace EIS
             toolStripComboBoxBuyer.SelectedIndex = -1;
             toolStripTextBoxCount.Text = "";
         }
-
         private void FormRequestMaterial_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (id != null)
