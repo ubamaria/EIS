@@ -18,7 +18,7 @@ namespace EIS
         private SQLiteCommand sql_cmd;
         private DataSet DS = new DataSet();
         private DataTable DT = new DataTable();
-        private string sPath = Path.Combine(Application.StartupPath, "F:\\sql\\MyDb.db");
+        private string sPath = Path.Combine(Application.StartupPath, Program.sPath);
 
         public FormMaterial()
         {
@@ -86,15 +86,13 @@ namespace EIS
             if (Convert.ToString(maxValue) == "")
                 maxValue = 0;
             //вставка в таблицу
-            string txtSQLQuery = "insert into Material (IdMaterial, Name, CostMaterial, NDS) values (" +
-            (Convert.ToInt32(maxValue) + 1) + ", '" + toolStripTextBox1.Text + "', '" + toolStripTextBox2.Text + "', '" + toolStripTextBox3.Text + "')";
+            string txtSQLQuery = "insert into Material (IdMaterial, Name, CostMaterial, NDS, Remains) values (" +
+            (Convert.ToInt32(maxValue) + 1) + ", '" + toolStripTextBox1.Text + "', '" +
+            toolStripTextBox2.Text + "', '" + toolStripTextBox3.Text + "', '" + toolStripTextBoxRemains.Text + "')";
             ExecuteQuery(txtSQLQuery);
             //обновление dataGridView1
             selectCommand = "select * from Material";
             refreshForm(ConnectionString, selectCommand);
-            //toolStripTextBox1.Text = "";
-            //toolStripTextBox2.Text = "";
-            //toolStripTextBox3.Text = "";
 
         }
 
@@ -132,7 +130,7 @@ namespace EIS
             toolStripTextBox1.Text = "";
             toolStripTextBox2.Text = "";
             toolStripTextBox3.Text = "";
-
+            toolStripTextBoxRemains.Text = "";
         }
         public void changeValue(string ConnectionString, String selectCommand)
         {
@@ -172,6 +170,11 @@ namespace EIS
                     return;
                 }
             }
+            if (toolStripTextBoxRemains.Text == "")
+            {
+                MessageBox.Show("Введите остаток материала на складе");
+                return;
+            }
             string percent = toolStripTextBox3.Text.Replace(".", ",");
             int percent1 = Convert.ToInt32(Convert.ToDouble(percent));
             if (percent1 >= 100)
@@ -187,8 +190,7 @@ namespace EIS
             string changeName = toolStripTextBox1.Text;
             //обновление Name
             String selectCommand = "update Material set Name='" + changeName + "'where IdMaterial = " + valueId;
- string ConnectionString = @"Data Source=" + sPath +
-";New=False;Version=3";
+            string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
             changeValue(ConnectionString, selectCommand);
             string changeCost = toolStripTextBox2.Text;
             String selectCost = "update Material set CostMaterial='" + changeCost + "'where IdMaterial = " + valueId;
@@ -196,12 +198,12 @@ namespace EIS
             string changeNDS = toolStripTextBox3.Text;
             String selectNDS = "update Material set NDS='" + changeNDS + "'where IdMaterial = " + valueId;
             changeValue(ConnectionString, selectNDS);
+            string changeRemains = toolStripTextBoxRemains.Text;
+            String selectRemains = "update Material set Remains='" + changeRemains + "'where IdMaterial = " + valueId;
+            changeValue(ConnectionString, selectRemains);
             //обновление dataGridView1
             selectCommand = "select * from Material";
             refreshForm(ConnectionString, selectCommand);
-            //toolStripTextBox1.Text = "";
-            //toolStripTextBox2.Text = "";
-            //toolStripTextBox3.Text = "";
         }
         private void dataGridView1_CellMouseClick(object sender,
 DataGridViewCellMouseEventArgs e)
@@ -215,6 +217,8 @@ DataGridViewCellMouseEventArgs e)
             toolStripTextBox2.Text = costId;
             string ndsId = dataGridView1[3, CurrentRow].Value.ToString();
             toolStripTextBox3.Text = ndsId;
+            string remainsId = dataGridView1[4, CurrentRow].Value.ToString();
+            toolStripTextBoxRemains.Text = remainsId;
         }
 
         private void bindingNavigatorDeleteItem_Click(object sender, EventArgs e)
